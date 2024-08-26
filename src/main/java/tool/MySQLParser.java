@@ -42,11 +42,19 @@ public class MySQLParser {
                     boolean isAutoIncrement = line.toLowerCase().contains("auto_increment");
                     boolean isNullable = !line.toLowerCase().contains("not null");
 
-                    Column column = new Column(columnName, columnType, isPrimaryKey, isAutoIncrement, isNullable);
+                    // 提取列注释
+                    String comment = null;
+                    if (line.toLowerCase().contains("comment")) {
+                        int commentIndex = line.toLowerCase().indexOf("comment '");
+                        comment = line.substring(commentIndex + 9, line.lastIndexOf("'")).trim();
+                    }
+
+                    Column column = new Column(columnName, columnType, isPrimaryKey, isAutoIncrement, isNullable, comment);
                     if (currentTable != null) {
                         currentTable.addColumn(column);
                     }
                 }
+
 
                 // 解析 PRIMARY KEY
                 if (line.startsWith("PRIMARY KEY")) {
